@@ -5,8 +5,38 @@
 @layer base {
   @font-face {
     font-family: "iranYekan";
-    /* font-weight: 400; */
     src: url("/fonts/iranYekan/IRANYekanRegular.ttf") format("truetype");
+    font-style: normal;
+  }
+}
+
+@layer base {
+  @font-face {
+    font-family: "bittypix";
+    src: url("/fonts/bittypix/BittypixCountdown-92M2.ttf") format("truetype");
+    font-style: normal;
+  }
+}
+
+@layer base {
+  @font-face {
+    font-family: "NoneShallPass";
+    src: url("/fonts/NoneShallPass/PressStart2P-Regular.ttf") format("truetype");
+    font-style: normal;
+  }
+}
+
+@layer base {
+  @font-face {
+    font-family: "PressStart2P";
+    src: url("/fonts/PressStart2P/PressStart2P-Regular.ttf") format("truetype");
+    font-style: normal;
+  }
+}
+@layer base {
+  @font-face {
+    font-family: "RibeyeMarrow";
+    src: url("/fonts/RibeyeMarrow/RibeyeMarrow-Regular.ttf") format("truetype");
     font-style: normal;
   }
 }
@@ -15,6 +45,10 @@ html,
 body {
   padding: 0;
   margin: 0;
+  font-family: iranYekan, sans-serif !important;
+}
+input,
+label {
   font-family: iranYekan, sans-serif !important;
 }
 
@@ -34,4 +68,37 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .dir-rtl {
   direction: rtl;
+}
+
+.trans20::before {
+  transform: rotate(-45deg) translateY(-20px);
+}
+
+.clip-polygon {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+.clip-polygon2 {
+  clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+}
+
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #edf2f7;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #677caf;
+    border-radius: 100vh;
+    border: 3px solid #edf2f7;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ba8469;
+  }
 }
