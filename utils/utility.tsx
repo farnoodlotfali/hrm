@@ -37,6 +37,15 @@ export const commafy = (num: string | number): string | number => {
   return str.join(".");
 };
 
+export const addZero = (i: number): string => {
+  i = Math.floor(i);
+  if (i < 10) {
+    return "0" + i;
+  }
+
+  return i + "";
+};
+
 export const miladi_be_shamsi = (gy: number, gm: number, gd: number) => {
   var g_d_m, jy, jm, jd, gy2, days;
   g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];

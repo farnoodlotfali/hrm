@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import AppState from "../context/AppState";
 import Head from "next/head";
 import "react-multi-date-picker/styles/layouts/mobile.css";
+import NextNProgress from "nextjs-progressbar";
 
 type ComponentWithPageLayout = AppProps & {
   Component: AppProps["Component"] & {
@@ -19,6 +20,13 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
         <link rel="icon" href="/logo.svg" />
       </Head>
       <AppState>
+        <NextNProgress
+          color="blue"
+          options={{ easing: "ease", speed: 500 }}
+          startPosition={0.3}
+          stopDelayMs={200}
+          height={5}
+        />
         {Component.PageLayout ? (
           <Component.PageLayout>
             <Component {...pageProps} />

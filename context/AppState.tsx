@@ -8,6 +8,8 @@ import { useRouter } from "next/router";
 const AppState = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [collapse, setCollapse] = useState<boolean>(false);
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [drawerContent, setDrawerContent] = useState<any>(null);
   const [sideBarItemKey, setSideBarItemKey] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [taskId, setTaskId] = useState<number>(0);
@@ -49,6 +51,10 @@ const AppState = ({ children }: { children: React.ReactNode }) => {
         userLogout,
         taskId: taskId,
         setTaskId,
+        openDrawer: openDrawer,
+        setOpenDrawer,
+        drawerContent: drawerContent,
+        setDrawerContent,
       }}
     >
       {children}

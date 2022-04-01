@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { AppContextInterface, User } from "../typings";
+import { AppContextInterface } from "../typings";
 
 const appContext = createContext<AppContextInterface | null>(null);
 

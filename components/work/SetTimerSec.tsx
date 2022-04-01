@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { CheckSquare, PlusCircle } from "react-feather";
-import { useEffect, useState } from "react";
-import DatePicker from "react-multi-date-picker";
+import { PlusCircle } from "react-feather";
+import { useEffect, useReducer, useState } from "react";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import type { Value } from "react-multi-date-picker";
@@ -9,11 +9,12 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 
 //api
-import ApiClass from "../../newApi";
+import Api from "../../newApi";
 
 //components
 import SelectBox from "../SelectBox";
 import MobileTimePickerBox from "../MobileTimePickerBox";
+import SelectBoxCards from "./SelectBoxCards";
 
 //utility
 import { myloader } from "../../utils/utility";
@@ -25,14 +26,56 @@ interface SetTimerSecProps {
   model: boolean;
   setModel: (value: boolean) => void;
 }
+
+//for reducer
+enum ReducerActionType {
+  INITIAL_CARDS_TRELLO,
+  CHOSEN_CARD_TRELLO_NAME,
+  CHOSEN_CARD_TRELLO_ID,
+  INITIAL_USER_PROJECTS,
+  CHOSEN_PROJECTS_NAME,
+  CHOSEN_PROJECTS_ID,
+  CHANGE_NOTE,
+  CHANGE_START_TIME,
+  CHANGE_FINISH_TIME,
+  CHANGE_DATE,
+}
+type ReducerAction = {
+  type: ReducerActionType;
+  payload?: any;
+};
+
+interface SetTimer {
+  cardTrello: CardTrello[];
+  chosenCardTrelloName: string[];
+  chosenCardTrelloId: string[];
+  userProjects: UserProject[];
+  chooseProjectsName: string[];
+  chooseProjectsId: string[];
+  note: string;
+  startTime: Date;
+  finishTime: Date;
+  Unix: Date;
+  calenderDate: Value;
+}
+
 const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
-  const [chooseCards, setchooseCards] = useState<string[]>([]);
-  const [chooseProjects, setchoosProjects] = useState<string[]>([]);
-  const [cardsTrello, setCardsTrello] = useState<CardTrello[]>([]);
-  const [userProjects, setUserProjects] = useState<UserProject[]>([]);
   const [mounted, setMounted] = useState<boolean>(true);
-  const [value, setValue] = useState<Value>(new Date());
-  const [Time, setTime] = useState<Date>(new Date("2018-01-01T00:00:00.000Z"));
+
+  const initialState: SetTimer = {
+    cardTrello: [],
+    chosenCardTrelloName: [],
+    chosenCardTrelloId: [],
+    userProjects: [],
+    chooseProjectsName: [],
+    chooseProjectsId: [],
+    note: "",
+    startTime: new Date(),
+    finishTime: new Date(),
+    Unix: new Date(),
+    calenderDate: new Date(),
+  };
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     if (mounted) {
@@ -50,25 +93,131 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
     let data = JSON.stringify({
       user: "aazahedi",
     });
-    ApiClass.Post("trello/cardsList", data)
+    Api.Post("trello/cardsList", data)
       .then((res) => {
-        setCardsTrello(res.data.Data);
+        dispatch({
+          type: ReducerActionType.INITIAL_CARDS_TRELLO,
+          payload: res.data.Data,
+        });
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
   const getUserProjects = () => {
     let data = JSON.stringify({
       user_id: 16,
     });
-    ApiClass.Post("project/user_project", data)
+    Api.Post("project/user_project", data)
       .then((res) => {
-        setUserProjects(res.data.Data);
+        dispatch({
+          type: ReducerActionType.INITIAL_USER_PROJECTS,
+          payload: res.data.Data,
+        });
       })
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const addWork = () => {
+    // setLoading(true);
+    let dataOfStart = JSON.stringify({
+      user_id: 8,
+      comment: state.note,
+      project: -1,
+      tasks: state.chosenCardTrelloId,
+      time: addDaysToDate(0),
+    });
+    let dataOfLeave = JSON.stringify({
+      user_id: 8,
+      comment: state.note,
+      project: -1,
+      tasks: state.chosenCardTrelloId,
+      time: addDaysToDate(1),
+    });
+    Api.Post("rollcall/add", dataOfStart)
+      .then((res) => {
+        if (res.status === 200) {
+          setTimeout(() => {
+            Api.Post("rollcall/add", dataOfLeave).then((res) => {
+              if (res.status === 200) {
+                // getDoneList();
+                // resetAll();
+              }
+            });
+          }, 900);
+        }
+      })
+      .catch((err) => {});
+  };
+
+  //handling functions
+
+  const addDaysToDate = (val: number) => {
+    let which = [state.startTime, state.finishTime];
+    let time = which[val];
+    let date = new Date(state.calenderDate);
+
+    date.setHours(time.getHours());
+    date.setMinutes(time.getMinutes());
+    date.setSeconds(time.getSeconds());
+
+    return Math.floor(date.getTime() / 1000);
+  };
+
+  //to keep user chosen cards NAME
+  const handleChosenCardTrelloName = (val: string[]) => {
+    dispatch({
+      type: ReducerActionType.CHOSEN_CARD_TRELLO_NAME,
+      payload: val,
+    });
+  };
+
+  //to keep user chosen cards ID
+  const handleChosenCardTrelloID = (id: string) => {
+    dispatch({
+      type: ReducerActionType.CHOSEN_CARD_TRELLO_ID,
+      payload: id,
+    });
+  };
+
+  //to keep user chosen projects NAME
+  const handleChosenProjectsName = (val: string[]) => {
+    dispatch({
+      type: ReducerActionType.CHOSEN_PROJECTS_NAME,
+      payload: val,
+    });
+  };
+
+  //to keep user chosen projects ID
+  const handleChosenProjectsID = (id: number) => {
+    dispatch({
+      type: ReducerActionType.CHOSEN_PROJECTS_ID,
+      payload: id,
+    });
+  };
+
+  const changeNoting = (val: string) =>
+    dispatch({ type: ReducerActionType.CHANGE_NOTE, payload: val });
+
+  const handleChangeDate = (value: DateObject) => {
+    dispatch({
+      type: ReducerActionType.CHANGE_DATE,
+      payload: {
+        Unix: value.toUnix() * 1000,
+        calenderDate: value,
+      },
+    });
+  };
+
+  const changeFinishTime = (val: Date) => {
+    dispatch({ type: ReducerActionType.CHANGE_FINISH_TIME, payload: val });
+  };
+
+  const changeStartTime = (val: Date) => {
+    dispatch({ type: ReducerActionType.CHANGE_START_TIME, payload: val });
   };
 
   return (
@@ -83,30 +232,25 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
         } formBx lg:w-3/5  w-full  relative h-full  bg-white flex justify-center items-center p-5 transition-all duration-500  `}
       >
         <div className="w-full">
-          <SelectBox
-            label="انتخاب کار"
-            data={cardsTrello}
-            chooseData={chooseCards}
-            setChooseData={setchooseCards}
-            icon={
-              <CheckSquare size={25} className="mr-3 text-firstColor-900" />
-            }
-            propertyName={"name"}
-            multiple
+          <SelectBoxCards
+            data={state.cardTrello}
+            chooseData={state.chosenCardTrelloName}
+            setChooseData={handleChosenCardTrelloName}
+            setSelectedId={handleChosenCardTrelloID}
           />
 
           <SelectBox
             label="انتخاب پروژه"
-            data={userProjects}
-            chooseData={chooseProjects}
-            setChooseData={setchoosProjects}
+            data={state.userProjects}
+            chooseData={state.chooseProjectsName}
+            setChooseData={handleChosenProjectsName}
+            setSelectedId={handleChosenProjectsID}
             icon={<PlusCircle size={25} className="mr-3 text-firstColor-900" />}
             propertyName={"project_title"}
             multiple
           />
 
           <div className="m-2">
-            {/* /// */}
             <DatePicker
               format="dddd DD MMMM YYYY"
               // ref={null}
@@ -125,8 +269,8 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
               calendarPosition="top"
               inputClass="p-1 border border-firstColor-900 rounded hover:border-blue-700 w-full text-center py-3 cursor-pointer"
               containerClassName="w-full "
-              value={value}
-              onChange={setValue}
+              value={state.calenderDate}
+              onChange={(value: DateObject) => handleChangeDate(value)}
               mapDays={({ date }) => {
                 let props: any = {};
                 let isWeekend = date.weekDay.index === 6;
@@ -143,13 +287,13 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
               <div className="flex gap-x-2">
                 <MobileTimePickerBox
                   label="خروج"
-                  setTime={setTime}
-                  time={Time}
+                  setTime={changeFinishTime}
+                  time={state.finishTime}
                 />
                 <MobileTimePickerBox
                   label="ورود"
-                  setTime={setTime}
-                  time={Time}
+                  setTime={changeStartTime}
+                  time={state.startTime}
                 />
               </div>
             </LocalizationProvider>
@@ -157,13 +301,19 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
 
           <div className="p-2">
             <textarea
+              value={state.note}
+              onChange={(e) => changeNoting(e.target.value)}
               className="w-full rounded p-3 border-firstColor-900 border h-32 focus-within:border-blue focus-within:border-2 focus-within:shadow-normal outline-0"
               dir="rtl"
               placeholder="یادداشت... "
             />
           </div>
+
           <div className="p-2 flex gap-8">
-            <button className="lg:mx-auto lg:w-full w-1/2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+            <button
+              onClick={() => addWork()}
+              className="lg:mx-auto lg:w-full w-1/2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+            >
               ثبت
             </button>
             <button
@@ -203,6 +353,82 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
     </div>
   );
 };
+
+const reducer = (state: SetTimer, action: ReducerAction) => {
+  switch (action.type) {
+    case ReducerActionType.INITIAL_CARDS_TRELLO:
+      return {
+        ...state,
+        cardTrello: action.payload,
+      };
+    case ReducerActionType.CHOSEN_CARD_TRELLO_NAME:
+      return {
+        ...state,
+        chosenCardTrelloName: action.payload,
+      };
+    case ReducerActionType.CHOSEN_CARD_TRELLO_ID:
+      return {
+        ...state,
+        chosenCardTrelloId:
+          state.chosenCardTrelloId.indexOf(action.payload) === -1
+            ? [...state.chosenCardTrelloId, action.payload]
+            : [
+                ...state.chosenCardTrelloId.filter((item: any) => {
+                  return item !== action.payload;
+                }),
+              ],
+      };
+
+    case ReducerActionType.INITIAL_USER_PROJECTS:
+      return {
+        ...state,
+        userProjects: action.payload,
+      };
+    case ReducerActionType.CHOSEN_PROJECTS_NAME:
+      return {
+        ...state,
+        chooseProjectsName: action.payload,
+      };
+
+    case ReducerActionType.CHOSEN_PROJECTS_ID:
+      return {
+        ...state,
+        chooseProjectsId:
+          state.chooseProjectsId.indexOf(action.payload) === -1
+            ? [...state.chooseProjectsId, action.payload]
+            : [
+                ...state.chooseProjectsId.filter((item: any) => {
+                  return item !== action.payload;
+                }),
+              ],
+      };
+    case ReducerActionType.CHANGE_NOTE:
+      return {
+        ...state,
+        note: action.payload,
+      };
+    case ReducerActionType.CHANGE_START_TIME:
+      return {
+        ...state,
+        startTime: action.payload,
+      };
+    case ReducerActionType.CHANGE_FINISH_TIME:
+      return {
+        ...state,
+        finishTime: action.payload,
+      };
+    case ReducerActionType.CHANGE_DATE:
+      return {
+        ...state,
+        Unix: action.payload.Unix,
+        calenderDate: action.payload.calenderDate,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
 const weekDays = [
   ["شنبه", "ش"],
   ["یکشنبه", "ی"],

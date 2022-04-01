@@ -10,6 +10,7 @@ module.exports = {
       backgroundImage: {
         "hrm-bg": "url('/login/bg.png')",
         "hrm-bg-top": "url('/work/bg.png')",
+        none: "none",
       },
       backgroundColor: {
         primary: "#677CAF",

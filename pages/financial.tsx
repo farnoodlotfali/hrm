@@ -1,9 +1,43 @@
-import { useMediaQuery } from "@mui/material";
-import { BarChart, Info } from "react-feather";
+import { useEffect, useState } from "react";
+import MoneyCard from "../components/financial/MoneyCard";
 import SideBarLayout from "../layouts/SideBarLayout";
+import ApiClass from "../newApi";
+import { TransactionCard } from "../typings";
 
 const Financial = () => {
-  const matches = useMediaQuery("(max-width:768px)");
+  const [mounted, setmounted] = useState<boolean>(true);
+  const [transactionCards, setTransactionCards] = useState<TransactionCard[]>(
+    []
+  );
+
+  useEffect(() => {
+    if (mounted) {
+      getDoneList();
+    }
+    return () => setmounted(false);
+  }, []);
+
+  //api
+  const getDoneList = () => {
+    let data = JSON.stringify({
+      // account: user.id + "01",
+      account: 8 + "01",
+    });
+
+    ApiClass.Post("transaction/list", data)
+      .then((res) => {
+        if (res.status === 200) {
+          setTransactionCards(res.data.Data);
+          // console.log(res.data.Data);
+          // if (res.data.Data.length === 0) {
+          //   setTotalMoney(toFarsiNumber(commafy(res.data.Data?.[0]?.balance)));
+          // }
+        }
+      })
+      .catch((err) => {})
+      .finally(() => {});
+  };
+
   return (
     <div className="flex md:flex-row flex-col w-full h-full overflow-y-scroll  gap-8 md:p-12 pb-16 p-4   ">
       <div className=" md:w-1/2 w-full  flex flex-col gap-8 justify-center ">
@@ -20,170 +54,14 @@ const Financial = () => {
         </div>
       </div>
 
-      <div className="bg-white md:w-1/2 w-full h-fit  rounded-lg p-6  shadow-normal">
+      <div className="md:bg-white bg-inherit md:w-1/2 w-full h-fit  rounded-lg p-6  md:shadow-normal shadow-none">
         <div className=" md:text-3xl text-sm text-right font-bold md:my-10 my-3">
           حساب مالی
         </div>
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>{" "}
-        <div className="flex justify-between items-center shadow-normal  rounded-lg py-3 px-5 my-5 border border-gray-200">
-          <div className="">
-            <Info size={matches ? 20 : 25} />
-          </div>
-          <div className="flex items-center text-right">
-            <div className="">
-              <div className="md:text-lg text-sm">تومان ۰</div>
-              <div className="text-gray-400 md:text-xs  text-[9px] ">
-                برداشت وجه
-              </div>
-            </div>
-            <div className="bg-gray-200 rounded-full p-3 ml-3">
-              <BarChart size={matches ? 25 : 35} className="text-red-500 " />
-            </div>
-          </div>
-        </div>
+
+        {transactionCards.map((item) => {
+          return <MoneyCard key={item.id} item={item} />;
+        })}
       </div>
     </div>
   );
