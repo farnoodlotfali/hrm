@@ -8,7 +8,7 @@ import {
 import SideBar from "../components/layout/sidebarLayout/SideBar";
 import appContext from "../context/appContext";
 import { Clock } from "react-feather";
-import { Drawer, SwipeableDrawer } from "@mui/material";
+import { Drawer } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import BottomNavItem from "../components/layout/sidebarLayout/BottomNavItem";
 
@@ -44,7 +44,7 @@ const SideBarLayout = ({ children }: { children: React.ReactNode }) => {
         className={`${
           collapse ? "right-[215px]" : "right-[70px]"
         } hidden md:block  bg-white p-1 top-7 rounded-full absolute border-firstColor-900 border-2  transition-all duration-500 z-10`}
-        onClick={() => setCollapse((prev: any) => !prev)}
+        onClick={() => setCollapse(!collapse)}
       >
         {collapse ? (
           <ChevronRight className="" size={25} />
