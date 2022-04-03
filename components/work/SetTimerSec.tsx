@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { PlusCircle } from "react-feather";
-import { useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
@@ -9,7 +9,7 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 
 //api
-import Api from "../../newApi";
+import Api from "../../api/newApi";
 
 //components
 import SelectBox from "../SelectBox";
@@ -21,6 +21,7 @@ import { myloader } from "../../utils/utility";
 
 //typings
 import { CardTrello, UserProject } from "../../typings";
+import appContext from "../../context/appContext";
 
 interface SetTimerSecProps {
   model: boolean;
@@ -61,6 +62,7 @@ interface SetTimer {
 
 const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
   const [mounted, setMounted] = useState<boolean>(true);
+  const { user } = useContext(appContext)!;
 
   const initialState: SetTimer = {
     cardTrello: [],
@@ -91,7 +93,7 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
   //api
   const getCardsTrello = () => {
     let data = JSON.stringify({
-      user: "aazahedi",
+      user: user?.trello_username,
     });
     Api.Post("trello/cardsList", data)
       .then((res) => {
@@ -107,7 +109,7 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
 
   const getUserProjects = () => {
     let data = JSON.stringify({
-      user_id: 16,
+      user_id: user?.id,
     });
     Api.Post("project/user_project", data)
       .then((res) => {
@@ -124,14 +126,14 @@ const SetTimerSec: React.FC<SetTimerSecProps> = ({ model, setModel }) => {
   const addWork = () => {
     // setLoading(true);
     let dataOfStart = JSON.stringify({
-      user_id: 8,
+      user_id: user?.id,
       comment: state.note,
       project: -1,
       tasks: state.chosenCardTrelloId,
       time: addDaysToDate(0),
     });
     let dataOfLeave = JSON.stringify({
-      user_id: 8,
+      user_id: user?.id,
       comment: state.note,
       project: -1,
       tasks: state.chosenCardTrelloId,

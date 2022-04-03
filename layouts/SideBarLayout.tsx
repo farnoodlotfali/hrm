@@ -24,13 +24,19 @@ const useStyles = makeStyles(() => ({
 
 const SideBarLayout = ({ children }: { children: React.ReactNode }) => {
   const classes = useStyles();
-  const { setCollapse, collapse, openDrawer, setOpenDrawer, drawerContent } =
-    useContext(appContext)!;
+  const {
+    user,
+    setCollapse,
+    collapse,
+    openDrawer,
+    setOpenDrawer,
+    drawerContent,
+  } = useContext(appContext)!;
   return (
     <div className="flex max-h-screen min-h-screen overflow-hidden">
       {/* children */}
       <div className="flex w-full overflow-x-scroll scrollbar-none   bg-hrm-bg-top bg-no-repeat object-contain bg-cover bg-right-bottom ">
-        {children}
+        {user ? children : <div className="">در حال بارگذاری</div>}
       </div>
 
       {/* sidebar */}
@@ -71,6 +77,7 @@ const SideBarLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Drawer */}
       <Drawer
+        className="md:hidden block"
         anchor={"bottom"}
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}

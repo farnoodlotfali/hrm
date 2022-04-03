@@ -24,9 +24,6 @@ module.exports = {
       fontFamily: {
         iranYekan: "iranYekan",
         bittypix: "bittypix",
-        NoneShallPass: "NoneShallPass",
-        PressStart2P: "PressStart2P",
-        RibeyeMarrow: "RibeyeMarrow",
       },
 
       colors: {

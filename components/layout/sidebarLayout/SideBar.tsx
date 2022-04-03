@@ -10,11 +10,10 @@ import {
   CreditCard,
 } from "react-feather";
 import SideBarItem from "./SideBarItem";
+import { myloader } from "../../../utils/utility";
 const SideBar = () => {
   const { collapse, userLogout } = useContext(appContext)!;
-  const myloader = ({ src }: { src: string }): string => {
-    return src;
-  };
+
   return (
     <div
       className={`sideBar flex flex-col justify-between bg-white py-3 transition-all duration-500 min-h-screen shadow-normalMd ${
@@ -77,7 +76,10 @@ const SideBar = () => {
           link={"/financial"}
           disable
         />
-        <div className="flex justify-end overflow-hidden hover:bg-gray-100 cursor-pointer mt-2 py-2 border-r-4 bg-blue-50">
+        <div
+          onClick={() => userLogout()}
+          className="flex justify-end overflow-hidden hover:bg-gray-100 cursor-pointer mt-2 py-2 border-r-4 bg-blue-50"
+        >
           <div className="whitespace-nowrap mr-3 self-center">خروج</div>
           <div className="">
             <LogOut size={40} className="mx-4 py-1" />

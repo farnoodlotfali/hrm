@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MoneyCard from "../components/financial/MoneyCard";
+import appContext from "../context/appContext";
 import SideBarLayout from "../layouts/SideBarLayout";
-import ApiClass from "../newApi";
+import ApiClass from "../api/newApi";
 import { TransactionCard } from "../typings";
 
 const Financial = () => {
@@ -9,7 +10,7 @@ const Financial = () => {
   const [transactionCards, setTransactionCards] = useState<TransactionCard[]>(
     []
   );
-
+  const { user } = useContext(appContext)!;
   useEffect(() => {
     if (mounted) {
       getDoneList();
@@ -20,8 +21,7 @@ const Financial = () => {
   //api
   const getDoneList = () => {
     let data = JSON.stringify({
-      // account: user.id + "01",
-      account: 8 + "01",
+      account: user?.id + "01",
     });
 
     ApiClass.Post("transaction/list", data)
@@ -55,7 +55,7 @@ const Financial = () => {
       </div>
 
       <div className="md:bg-white bg-inherit md:w-1/2 w-full h-fit  rounded-lg p-6  md:shadow-normal shadow-none">
-        <div className=" md:text-3xl text-sm text-right font-bold md:my-10 my-3">
+        <div className=" md:text-3xl text-lg text-right font-bold md:my-10 my-3">
           حساب مالی
         </div>
 

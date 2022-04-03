@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 
 //api
-import Api from "../newApi";
+import Api from "../api/newApi";
 
 //icons
 import { Info } from "react-feather";
@@ -12,6 +12,7 @@ import BlankLayout from "../layouts/BlankLayout";
 import Cookies from "js-cookie";
 import appContext from "../context/appContext";
 import { isCorrectPhoneNumber, myloader } from "../utils/utility";
+import { toast } from "react-toastify";
 
 interface Validatetions {
   mobile: boolean;
@@ -91,7 +92,9 @@ const Login = () => {
           setTime(60);
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        toast.error("کابری با این شماره پیدا نشد");
+      });
   };
 
   const verify = () => {
@@ -109,7 +112,9 @@ const Login = () => {
           router.push("/work");
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        toast.error("کد وارد شده صحیح نمی‌باشد!");
+      });
   };
 
   //handle func
@@ -251,6 +256,7 @@ const Login = () => {
                 width={30}
                 height={10}
                 loader={myloader}
+                priority
                 unoptimized
               />
             </div>

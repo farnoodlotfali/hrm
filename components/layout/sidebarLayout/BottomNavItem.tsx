@@ -12,10 +12,16 @@ const BottomNavItem: React.FC<BottomNavItemProps> = ({ label, icon, link }) => {
 
   return (
     <Link href={link}>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center min-w-[55px] ">
         {icon}
         {router.pathname === link && (
-          <span className="text-xs mt-[2px]">{label}</span>
+          <span
+            className={`text-xs mt-[2px] visible ${
+              router.pathname === link ? "visible" : "invisible"
+            } `}
+          >
+            {label}
+          </span>
         )}
       </div>
     </Link>

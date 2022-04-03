@@ -1,10 +1,10 @@
 import Image from "next/image";
 
 import { PlusCircle } from "react-feather";
-import { useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 
 //api
-import Api from "../../newApi";
+import Api from "../../api/newApi";
 
 //utility
 import { addZero, myloader } from "../../utils/utility";
@@ -16,6 +16,7 @@ import SelectBox from "../SelectBox";
 import { CardTrello, UserProject } from "../../typings";
 import { type } from "os";
 import SelectBoxCards from "./SelectBoxCards";
+import appContext from "../../context/appContext";
 
 interface LiveTimerSecProps {
   model: boolean;
@@ -47,6 +48,7 @@ interface LiveTimer {
   note: string;
 }
 const LiveTimerSec: React.FC<LiveTimerSecProps> = ({ model, setModel }) => {
+  const { user } = useContext(appContext)!;
   const initialState: LiveTimer = {
     cardTrello: [],
     chosenCardTrelloName: [],
@@ -95,7 +97,7 @@ const LiveTimerSec: React.FC<LiveTimerSecProps> = ({ model, setModel }) => {
   //api
   const getCardsTrello = () => {
     let data = JSON.stringify({
-      user: "aazahedi",
+      user: user?.trello_username,
     });
     Api.Post("trello/cardsList", data)
       .then((res) => {
@@ -112,7 +114,7 @@ const LiveTimerSec: React.FC<LiveTimerSecProps> = ({ model, setModel }) => {
 
   const getUserProjects = () => {
     let data = JSON.stringify({
-      user_id: 16,
+      user_id: user?.id,
     });
     Api.Post("project/user_project", data)
       .then((res) => {
@@ -128,8 +130,7 @@ const LiveTimerSec: React.FC<LiveTimerSecProps> = ({ model, setModel }) => {
 
   const addStartOrleave = () => {
     let data = JSON.stringify({
-      // user_id: user.id,
-      user_id: 8,
+      user_id: user?.id,
       comment: state.note,
       project: -1,
       tasks: state.chosenCardTrelloId,

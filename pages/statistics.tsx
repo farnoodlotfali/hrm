@@ -1,20 +1,13 @@
-import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import {
-  ChevronDown,
-  CornerLeftDown,
-  CornerRightDown,
-  RefreshCw,
-  Trash2,
-} from "react-feather";
 import SelectBox from "../components/SelectBox";
 import RecordCard from "../components/statistics/RecordCard";
 import TableSec from "../components/statistics/TableSec";
 import appContext from "../context/appContext";
 import SideBarLayout from "../layouts/SideBarLayout";
-import ApiClass from "../newApi";
+import Api from "../api/newApi";
 import { DoneWork, Year } from "../typings";
 import { enToFaDigit } from "../utils/utility";
+import Spinner from "../components/Spinner";
 
 const Statistics = () => {
   const [totalTime, setTotalTime] = useState<string>("00:00:00");
@@ -22,27 +15,30 @@ const Statistics = () => {
   const [year, setYear] = useState<string[]>([]);
   const [allYear, setallYear] = useState<Year[]>([]);
   const [doneWorks, setDoneWorks] = useState<DoneWork[]>([]);
-  const [expanded, setExpanded] = useState<number>(0);
-
+  const [mounted, setMounted] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { user } = useContext(appContext)!;
   useEffect(() => {
-    getDoneList();
+    if (mounted) {
+      getDoneList();
+    }
+    return () => setMounted(false);
   }, []);
 
   //api
   const getDoneList = () => {
+    setLoading(true);
     let monthdata = JSON.stringify({
       time: Math.floor(new Date().getTime() / 1000),
     });
-    ApiClass.Post("rollcall/currentTime", monthdata)
+    Api.Post("rollcall/currentTime", monthdata)
       .then((res) => {
         if (res.status === 200) {
           let year = JSON.parse(res.data.Data.yare);
           let month = JSON.parse(res.data.Data.month);
           let data = JSON.stringify({
-            user_id: 8,
-            // user_id: user?.id,
-            trello_username: "aazahedi",
-            // trello_username: user?.trello_username,
+            user_id: user?.id,
+            trello_username: user?.trello_username,
             year: year,
             month: month,
           });
@@ -50,16 +46,15 @@ const Statistics = () => {
           setMonth([allMonths[month - 1].name]);
           setYear([year]);
           getTotalTimeOfTheMonth(year, month);
-          ApiClass.Post("rollcall/list", data)
+          Api.Post("rollcall/list", data)
             .then((res) => {
               if (res.status === 200) {
                 setDoneWorks(res.data.Data);
-                // getTotalTime();
               }
             })
             .catch((err) => {})
             .finally(() => {
-              // setLoading(false);
+              setLoading(false);
             });
         }
       })
@@ -73,24 +68,19 @@ const Statistics = () => {
       .indexOf(month[0]);
 
     let data = JSON.stringify({
-      user_id: 8,
-      // user_id: user?.id,
-      trello_username: "aazahedi",
-      // trello_username: user?.trello_username,
+      user_id: user?.id,
+      trello_username: user?.trello_username,
       year: year[0],
       month: index + 1,
     });
     getTotalTimeOfTheMonth(year[0], index + 1);
-    ApiClass.Post("rollcall/list", data)
+    Api.Post("rollcall/list", data)
       .then((res) => {
         if (res.status === 200) {
           setDoneWorks(res.data.Data);
         }
       })
-      .catch((err) => {})
-      .finally(() => {
-        // setLoading(false);
-      });
+      .catch((err) => {});
   };
 
   const getTotalTimeOfTheMonth = (
@@ -98,34 +88,34 @@ const Statistics = () => {
     valmonth: string | number
   ) => {
     let data = JSON.stringify({
-      user_id: 8,
+      user_id: user?.id,
       year: valyear,
       month: valmonth,
     });
 
-    ApiClass.Post("rollcall/totalWorkingTime", data)
+    Api.Post("rollcall/totalWorkingTime", data)
       .then((res) => {
         if (res.status === 200) {
-          console.log(res.data);
-
           setTotalTime(res.data.Data);
-          // setLoading(false);
         }
       })
-      .catch((err) => {})
-      .finally(() => {
-        // setLoading(false);
-      });
+      .catch((err) => {});
+  };
+
+  //api
+  const deleteTask = (tasksId: number) => {
+    let data = JSON.stringify({
+      user_id: user?.id,
+      action_id: tasksId,
+    });
+    Api.Post("rollcall/delete", data).then((res) => {
+      if (res.status === 200) {
+        getDoneList();
+      }
+    });
   };
 
   //handling functions
-
-  const truncate = (str: string) => {
-    if (str.length === 0) {
-      return <div className="text-red-400">بدون عنوان</div>;
-    }
-    return str.length > 10 ? "..." + str.substring(0, 25) : str;
-  };
 
   const AddYear = (val: number): Year[] => {
     var years: Year[] = [];
@@ -158,7 +148,7 @@ const Statistics = () => {
         <div className="clip-polygon  w-32  h-40 relative bg-firstColor-900 flex justify-end items-center flex-col my-0 mx-[-60px] ">
           <span className="text-white font-bold mb-5">00:00:00</span>
           <span className="text-white font-bold  text-center text-xs mb-2">
-            مجموع ساعت کارکرد
+            کارکرد مورد انتظار
           </span>
         </div>
       </div>
@@ -226,15 +216,23 @@ const Statistics = () => {
         </div>
       </div>
 
-      {/* table */}
-      <TableSec data={doneWorks} />
+      {loading ? (
+        <div className="w-full flex justify-center">
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          {/* table */}
+          <TableSec data={doneWorks} deleteTask={deleteTask} />
 
-      {/* Accordion */}
-      <div className="md:hidden block pb-12">
-        {doneWorks.map((item) => {
-          return <RecordCard key={item.actionId} item={item} />;
-        })}
-      </div>
+          {/* Accordion */}
+          <div className="md:hidden block pb-12">
+            {doneWorks.map((item) => {
+              return <RecordCard key={item.actionId} item={item} />;
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 };

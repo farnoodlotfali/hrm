@@ -14,10 +14,6 @@ const AppState = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [taskId, setTaskId] = useState<number>(0);
 
-  // useEffect(() => {
-  //   // setSideBarItemKey(location.pathname);
-  // }, [location]);
-
   useEffect(() => {
     check();
     // eslint-disable-next-line
@@ -27,7 +23,7 @@ const AppState = ({ children }: { children: React.ReactNode }) => {
   const check = () => {
     if (!Cookies.get("kashanPlusUser")) {
       setUser(null);
-      // navigate("/");
+      router.push("/");
     } else {
       setUser(JSON.parse(Cookies.get("kashanPlusUser")!));
     }
@@ -35,9 +31,10 @@ const AppState = ({ children }: { children: React.ReactNode }) => {
 
   //logout user
   const userLogout = () => {
+    router.push("/");
+
     Cookies.remove("kashanPlusUser");
     setUser(null);
-    router.push("/");
   };
   return (
     <AppContext.Provider

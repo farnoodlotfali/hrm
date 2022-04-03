@@ -4,6 +4,8 @@ import AppState from "../context/AppState";
 import Head from "next/head";
 import "react-multi-date-picker/styles/layouts/mobile.css";
 import NextNProgress from "nextjs-progressbar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type ComponentWithPageLayout = AppProps & {
   Component: AppProps["Component"] & {
@@ -20,6 +22,14 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
         <link rel="icon" href="/logo.svg" />
       </Head>
       <AppState>
+        <ToastContainer
+          pauseOnFocusLoss
+          theme="colored"
+          rtl
+          autoClose={5000}
+          bodyClassName="font-iranYekan"
+        />
+
         <NextNProgress
           color="blue"
           options={{ easing: "ease", speed: 500 }}

@@ -20,21 +20,6 @@
 
 @layer base {
   @font-face {
-    font-family: "NoneShallPass";
-    src: url("/fonts/NoneShallPass/PressStart2P-Regular.ttf") format("truetype");
-    font-style: normal;
-  }
-}
-
-@layer base {
-  @font-face {
-    font-family: "PressStart2P";
-    src: url("/fonts/PressStart2P/PressStart2P-Regular.ttf") format("truetype");
-    font-style: normal;
-  }
-}
-@layer base {
-  @font-face {
     font-family: "RibeyeMarrow";
     src: url("/fonts/RibeyeMarrow/RibeyeMarrow-Regular.ttf") format("truetype");
     font-style: normal;

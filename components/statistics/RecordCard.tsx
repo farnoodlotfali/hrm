@@ -41,23 +41,21 @@ const RecordCard: React.FC<RecordCardProps> = ({ item }) => {
               کار و بورد
               <CornerLeftDown className=" mt-3 mr-1" size={12} />
             </span>
-            <p>
-              {item.tasks.length > 1 ? (
-                item.tasks.map((task) => {
-                  return (
-                    <bdi className="flex items-center  flex-wrap">
-                      <div className=""> {task.name} </div>
-                      <div className="text-gray-400 text-[8px]">
-                        ( {task.board} )
-                      </div>
-                      -
-                    </bdi>
-                  );
-                })
-              ) : (
-                <div className="text-rose-500">بدون عنوان</div>
-              )}
-            </p>
+            {item.tasks.length > 0 ? (
+              item.tasks.map((task) => {
+                return (
+                  <bdi key={task.id} className="flex items-center  flex-wrap">
+                    <div className=""> {task.name} </div>
+                    <div className="text-gray-400 text-[8px]">
+                      ( {task.board} )
+                    </div>
+                    -
+                  </bdi>
+                );
+              })
+            ) : (
+              <div className="text-rose-500">بدون عنوان</div>
+            )}
           </div>
           <div className="mt-5 text-justify text-xs  dir-rtl leading-7  ">
             <span className="flex font-bold">

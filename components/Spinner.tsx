@@ -1,8 +1,8 @@
 import Image from "next/image";
-import SideBarLayout from "../layouts/SideBarLayout";
+import { memo } from "react";
 import { myloader } from "../utils/utility";
 
-const test = () => {
+const Spinner = () => {
   return (
     <div className="flex flex-col h-fit">
       <Image
@@ -20,5 +20,4 @@ const test = () => {
   );
 };
 
-test.PageLayout = SideBarLayout;
-export default test;
+export default memo(Spinner);

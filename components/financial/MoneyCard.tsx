@@ -100,7 +100,7 @@ const MoneyCard: React.FC<MoneyCardProps> = ({ item }) => {
             <div className="md:text-lg text-sm">
               {item.credit === 0
                 ? enToFaDigit(commafy(item.debit).toString())
-                : enToFaDigit(commafy(item.credit).toString())}
+                : enToFaDigit(commafy(item.credit).toString())}{" "}
               تومان
             </div>
             <div className="text-gray-400 md:text-xs  text-[9px] ">

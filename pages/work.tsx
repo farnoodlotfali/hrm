@@ -8,7 +8,7 @@ import LiveTimerSec from "../components/work/LiveTimerSec";
 import SetTimerSec from "../components/work/SetTimerSec";
 
 const Work = () => {
-  const [model, setModel] = useState<boolean>(true);
+  const [model, setModel] = useState<boolean>(false);
 
   return (
     <div className="w-full ">
