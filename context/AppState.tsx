@@ -23,7 +23,7 @@ const AppState = ({ children }: { children: React.ReactNode }) => {
   const check = () => {
     if (!Cookies.get("kashanPlusUser")) {
       setUser(null);
-      router.push("/");
+      // router.push("/");
     } else {
       setUser(JSON.parse(Cookies.get("kashanPlusUser")!));
     }
